@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Mikipedia — 探索知識的世界</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #5B21B6;
+  --primary-dark: #4C1D95;
+  --primary-light: #7C3AED;
+  --primary-pale: #A78BFA;
+  --primary-ghost: #C4B5FD;
+  --bg: #F5F3FF;
+  --bg-light: #FAFAFE;
+  --surface: #FFFFFF;
+  --surface-alt: #F8F7FF;
+  --text: #1F2937;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --border: #E9D5FF;
+  --border-light: #F3E8FF;
+  --shadow: rgba(91, 33, 182, 0.08);
+  --shadow-md: rgba(91, 33, 182, 0.12);
+  --gold: #B7942E;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --font-serif: 'Noto Serif TC', 'Times New Roman', serif;
+  --font-sans: 'Noto Sans TC', -apple-system, sans-serif;
+  --transition: 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 70%, rgba(124, 58, 237, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(167, 139, 250, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  background: rgba(245, 243, 255, 0.7);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid var(--border-light);
+  border-right: 1px solid var(--border-light);
+  box-shadow: 0 0 60px var(--shadow), 0 0 120px rgba(91, 33, 182, 0.03);
+}
+
+/* ── Header ── */
+.header {
+  padding: 48px 24px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(245, 243, 255, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.header-left { display: flex; flex-direction: column; }
+
+.logo {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--primary-dark);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.logo-accent {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--primary-light);
+  border-radius: 2px;
+  margin-left: 2px;
+  vertical-align: super;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.8); }
+}
+
+.subtitle {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.header-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+.header-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(91, 33, 182, 0.25);
+}
+
+/* ── Search ── */
+.search-wrapper {
+  padding: 12px 24px;
+  position: sticky;
+  top: 100px;
+  z-index: 99;
+  background: rgba(245, 243, 255, 0.85);
+  backdrop-filter: blur(16px);
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 0 16px;
+  border: 1px solid var(--border-light);
+  transition: all var(--transition);
+  cursor: text;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.search-bar:focus-within {
+  border-color: var(--primary-pale);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15), 0 2px 8px var(--shadow-md);
+}
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 14px 0;
+  font-size: 15px;
+  font-family: var(--font-sans);
+  color: var(--text);
+  outline: none;
+}
+.search-bar input::placeholder { color: var(--text-tertiary); }
+.search-icon { font-size: 16px; margin-right: 10px; opacity: 0.6; }
+
+/* ── Content ── */
+.content {
+  padding: 8px 24px 120px;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 20px 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Category Cards ── */
+.categories-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.cat-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 18px 14px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid var(--border-light);
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.cat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(167, 139, 250, 0.06), transparent);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.cat-card:hover::before { opacity: 1; }
+.cat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px var(--shadow-md);
+  border-color: var(--primary-pale);
+}
+.cat-card:active { transform: scale(0.97); }
+
+.cat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin: 0 auto 10px;
+}
+
+.cat-title {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.cat-count {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* ── Topic Detail View ── */
+.topic-view {
+  display: none;
+  animation: fadeSlideIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.topic-view.active { display: block; }
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.back-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-top: 4px;
+}
+
+.back-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all var(--transition);
+  color: var(--primary-light);
+  font-weight: 700;
+}
+.back-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+.breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+}
+
+.topic-header { margin-bottom: 20px; }
+.topic-h1 {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.topic-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.topic-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: var(--font-sans);
+  color: var(--text-secondary);
+}
+.action-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(91, 33, 182, 0.2);
+}
+.action-btn.bookmarked { background: #FEF3C7; border-color: #F59E0B; color: #B45309; }
+
+/* ── Collapsible Accordion ── */
+.accordion { margin-top: 4px; }
+
+.accordion-item { margin-bottom: 2px; }
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  position: relative;
+  user-select: none;
+}
+.accordion-header:hover { background: rgba(167, 139, 250, 0.06); }
+
+.accordion-header .arrow {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  transition: transform var(--transition);
+  font-size: 10px;
+  color: var(--primary-light);
+  flex-shrink: 0;
+}
+.accordion-item.open > .accordion-header .arrow { transform: rotate(90deg); }
+
+.accordion-header .dot {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+.accordion-header .dot::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--primary-ghost);
+}
+
+.accordion-title {
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+  line-height: 1.4;
+}
+
+/* Depth styles */
+.depth-0 .accordion-title { font-family: var(--font-serif); font-size: 18px; font-weight: 700; color: var(--primary-dark); }
+.depth-1 .accordion-title { font-family: var(--font-serif); font-size: 16px; font-weight: 600; color: var(--primary); }
+.depth-2 .accordion-title { font-size: 14px; font-weight: 500; }
+.depth-3 .accordion-title { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+
+.depth-1 > .accordion-header { border-left: 3px solid var(--primary-light); padding-left: 28px; background: var(--surface); }
+.depth-2 > .accordion-header { border-left: 3px solid var(--primary-pale); padding-left: 42px; background: var(--surface-alt); }
+.depth-3 > .accordion-header { border-left: 2px solid var(--border); padding-left: 56px; }
+
+.accordion-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s cubic-bezier(0.22, 0.61, 0.36, 1), padding 0.4s ease;
+}
+.accordion-item.open > .accordion-body {
+  max-height: 2000px;
+}
+
+.accordion-content {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  padding: 10px 16px 16px;
+}
+.depth-0 > .accordion-body .accordion-content { padding-left: 28px; }
+.depth-1 > .accordion-body .accordion-content { padding-left: 42px; }
+.depth-2 > .accordion-body .accordion-content { padding-left: 56px; }
+
+/* ── Home View Transitions ── */
+.home-view { display: block; }
+.home-view.hidden { display: none; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--primary-dark);
+  color: white;
+  padding: 14px 24px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  z-index: 999;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  box-shadow: 0 12px 32px rgba(76, 29, 149, 0.35);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Footer ── */
+.app-footer {
+  text-align: center;
+  padding: 32px 24px 48px;
+}
+.app-footer p { font-size: 12px; color: var(--text-tertiary); }
+.app-footer .divider {
+  width: 40px;
+  height: 1px;
+  background: var(--border);
+  margin: 14px auto;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .app { max-width: 100%; border: none; }
+  .header { padding: 40px 16px 12px; }
+  .search-wrapper { padding: 10px 16px; }
+  .content { padding: 8px 16px 100px; }
+  .categories-grid { gap: 8px; }
+  .cat-card { padding: 14px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">Mikipedia<span class="logo-accent"></span></div>
+      <div class="subtitle">探索知識的世界</div>
+    </div>
+    <div class="header-actions">
+      <button class="header-btn" title="收藏" onclick="showToast('⭐ 已加入收藏')">⭐</button>
+      <button class="header-btn" title="離線文章" onclick="showToast('📥 已儲存為離線閱讀')">📥</button>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-wrapper">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="搜索主題..." id="searchInput" oninput="handleSearch()">
+    </div>
+  </div>
+
+  <!-- Content Area -->
+  <div class="content" id="contentArea">
+    <!-- Home View -->
+    <div class="home-view" id="homeView">
+      <div class="section-title">知識分類</div>
+      <div class="categories-grid" id="categoriesGrid"></div>
+      <div class="app-footer">
+        <div class="divider"></div>
+        <p>涵蓋 7 大分類 · 42+ 個主題</p>
+        <p style="margin-top:4px">層層深入 · 大學入門級深度</p>
+      </div>
+    </div>
+    <!-- Topic Detail View -->
+    <div class="topic-view" id="topicView"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+const categories = [
+  {
+    id: 'history', title: '歷史', icon: '📜', color: '#7C3AED',
+    topics: [
+      {
+        id: 'china-ancient', title: '中國古代史', desc: '從先秦至明清，跨越五千年的中華文明演進', icon: '🏯',
+        color: '#7C3AED',
+        sections: [
+          { id:'s1', title:'先秦時期（約前2070–前221）', content:'先秦時期是中國文明的發軔與奠基階段，涵蓋夏、商、周三代及春秋戰國。從部落聯盟到封建王朝，從甲骨卜辭到百家爭鳴，華夏文明的核心基因在此時期全部成形。', subs:[
+            { id:'s1a', title:'夏朝（約前2070–前1600）', content:'夏朝被認為是中國歷史上第一個世襲王朝。《史記·夏本紀》記載，禹因治水有功，受舜禪讓而為首領。其子啟打破了禪讓傳統，開啟了「家天下」的世襲制度。考古學上的二里頭文化遺址發現了大型宮殿基址和青銅冶鑄作坊，提供了有力佐證。', subs:[
+              { id:'s1a1', title:'大禹治水與九州劃分', content:'傳說堯舜時期洪水滔天，禹（姒文命）受命治水。與其父鯀的「堵」法不同，禹採用「疏導」的方式——開挖河道、引導洪水入海，歷時十三年（三過家門而不入）。治水成功後，禹將天下劃分為九州（冀、兗、青、徐、揚、荊、豫、梁、雍），建立了中國最早的行政區劃體系。九州概念此後成為中國地理的基礎框架。' },
+            ]},
+            { id:'s1b', title:'商朝（約前1600–前1046）', content:'商朝是中國第一個有同時期文字（甲骨文）記載的王朝。商湯滅夏桀後建立商朝，傳十七世、三十一王，歷時約550年。', subs:[
+              { id:'s1b1', title:'甲骨文與占卜文化', content:'甲骨文發現於河南安陽殷墟，刻寫於龜甲和獸骨之上。商朝人極度重視祭祀與占卜——國家大事（戰爭、收成、天氣、疾病）都會進行占卜以尋求祖先和神靈的指示。占卜過程：在龜甲或獸骨上鑽鑿凹槽、用火灼燒使其產生裂紋、根據裂紋的走向和形態解讀吉凶、將占卜內容和結果刻在甲骨上。單字總數約4000–5000個，其中約1500個已被辨識。' },
+              { id:'s1b2', title:'青銅文明鼎盛', content:'商朝青銅器鑄造技術達到頂峰。后母戊鼎（原稱司母戊鼎）高133厘米，重832.84公斤，是世界已出土最重的青銅器。鑄造如此巨大的器物需要使用「塊範法」——先製作陶質模型和鑄範，然後將約1000公斤的銅液一次性澆入型腔中，這需要在極短時間內精確地組織大規模的熔煉和澆鑄作業。' },
+            ]},
+            { id:'s1c', title:'周朝（前1046–前256）', content:'周朝是中國歷史上延續最久的王朝（約790年），建立了影響深遠的宗法封建制度和禮樂文化。', subs:[
+              { id:'s1c1', title:'西周：封建與禮樂', content:'周武王在牧野之戰擊敗商紂王後建立周朝。周公旦（武王之弟）制禮作樂——以血緣為紐帶的宗法制、以分封為基礎的封建制，為周朝長達數百年的穩定統治提供了制度基礎。', subs:[
+                { id:'s1c1a', title:'嫡長子繼承制', content:'宗法制度的核心是嫡長子繼承制：正妻所生的長子享有優先繼承權，次子和庶子降為小宗。大宗和小宗的關係形成嚴密等級體系。這一制度深刻影響了此後兩千年中國的家族組織——祠堂、族譜、宗族等傳統均根源於此。' },
+              ]},
+              { id:'s1c2', title:'春秋戰國：百家爭鳴', content:'周王室衰微後，諸侯爭霸、各國變法圖強。思想領域出現了「百家爭鳴」——儒家（孔子、孟子、荀子）、道家（老子、莊子）、墨家（墨子）、法家（韓非子）、名家（公孫龍）、兵家（孫子）等各派競相發展，成為可與古希臘哲學黃金時代相媲美的思想大爆發時代。' },
+            ]},
+          ]},
+          { id:'s2', title:'秦漢時期（前221–220）', content:'秦漢時期是中國歷史上第一個大一統時代。秦始皇建立中央集權帝國，漢朝發展成為可與羅馬帝國並列的東方超級大國。', subs:[
+            { id:'s2a', title:'秦朝：統一與暴政', content:'公元前221年秦王嬴政滅六國完成統一，自稱「始皇帝」。廢分封、行郡縣（36郡）、書同文（小篆）、車同軌、統一度量衡和貨幣。修建長城、馳道、阿房宮和驪山陵墓（兵馬俑）。嚴刑峻法和大規模工程建設導致民不聊生，秦朝僅存在15年即滅亡。' },
+            { id:'s2b', title:'漢朝輝煌', content:'劉邦在楚漢戰爭中擊敗項羽後建立漢朝。西漢「文景之治」輕徭薄賦、與民休息。漢武帝時期達到鼎盛：政治上推恩令削藩、經濟上鹽鐵官營、軍事上反擊匈奴（衛青、霍去病）、外交上張騫通西域開闢絲綢之路、文化上獨尊儒術設立太學。東漢時期蔡倫改進造紙術、張衡發明地動儀和渾天儀。', subs:[
+              { id:'s2b1', title:'絲綢之路', content:'公元前138年和前119年，漢武帝兩次派張騫出使西域（中亞）。張騫的旅程打開了從長安經河西走廊、塔里木盆地、帕米爾高原通往中亞、西亞直至地中海世界的貿易通道——絲綢之路。中國的絲綢、瓷器、茶葉和造紙術通過這條路線傳入西方，而西域的葡萄、胡桃、石榴、苜蓿、駱駝和佛教也經此傳入中國，極大地促進了東西方的物質和文化交流。' },
+              { id:'s2b2', title:'造紙術革命', content:'東漢蔡倫（約63–121）在公元105年總結了前人經驗，以樹皮、麻頭、破布和漁網等廉價原料，經過浸泡、切碎、蒸煮、舂搗、打漿、抄紙和晾乾等工序，製造出了輕便且廉價的紙張。在此之前，中國主要使用竹簡（笨重——秦始皇每天批閱約120斤奏章）、木牘和縑帛（昂貴——只有貴族能使用）作為書寫材料。蔡倫的造紙術使人類知識的記錄和傳播方式發生了革命性的變化。' },
+            ]},
+          ]},
+          { id:'s3', title:'隋唐盛世（581–907）', content:'隋唐時期重新統一中國，將中國封建文明推向最高峰。', subs:[
+            { id:'s3a', title:'隋朝制度創新', content:'隋文帝創立科舉制度（以考試選拔官員打破門閥壟斷）和三省六部制（中書決策、門下審核、尚書執行）。大運河以洛陽為中心，連接五大水系全長約2700公里，極大促進了南北經濟文化交流。然而隋煬帝好大喜功、三征高句麗失敗，導致全國性起義，隋朝僅37年即滅亡。' },
+            { id:'s3b', title:'唐朝鼎盛', content:'唐太宗「貞觀之治」和唐玄宗「開元盛世」將唐朝推向巔峰。長安人口超百萬為世界最大城市，來自波斯、阿拉伯、印度、日本等地的商人、僧侶和留學生雲集於此。詩歌達到極盛（李白、杜甫、白居易）。安史之亂（755–763）成為唐朝由盛轉衰的轉折點——人口從約5200萬銳減至約1700萬。' },
+          ]},
+          { id:'s4', title:'宋元明清（960–1912）', content:'經濟重心南移完成，商品經濟持續發展，但經歷了兩次異族統治（元朝和清朝）。', subs:[
+            { id:'s4a', title:'宋朝經濟革命', content:'宋朝GDP約佔全球22–25%。世界上最早的紙幣「交子」在四川出現。畢昇發明活字印刷術、指南針廣泛用於航海、火藥武器應用於戰爭。宋詞與唐詩並稱——蘇軾（豪放派）、李清照（婉約派）、辛棄疾等。朱熹集理學之大成。' },
+            { id:'s4b', title:'明清變遷', content:'明朝朱元璋廢丞相、朱棣遷都北京建紫禁城、鄭和七下西洋（1405–1433）。清朝康雍乾盛世（135年）將疆域推向極盛，但閉關鎖國（1757年僅限廣州一口通商）使中國與工業革命中的西方脫節。1840年鴉片戰爭打開了近代屈辱史的大門。1912年2月12日宣統帝溥儀退位，延續兩千多年的封建帝制終結。' },
+          ]},
+        ]
+      },
+      { id: 'world-modern', title: '世界近代史', desc: '從大航海到冷戰結束，塑造現代世界的重大歷史變革', icon: '🌍', color: '#7C3AED',
+        sections: [
+          { id:'wm1', title:'大航海時代（15–17世紀）', content:'奧斯曼帝國控制傳統貿易路線，歐洲各國尋找通往東方新航路。1492年哥倫布在西班牙王室資助下向西航行，意外發現美洲大陸（他至死認為到達的是印度，因此將當地居民稱為「印第安人」）。1498年達·伽馬繞過好望角到達印度。1519–1522年麥哲倫船隊完成人類首次環球航行。大航海深刻改變了世界——歐洲海外殖民帝國建立、哥倫布交換改變全球農業和飲食（馬鈴薯、玉米、番茄、煙草傳入舊世界；小麥、馬匹及傳染病傳入新世界導致美洲原住民人口災難性銳減約90%）、大西洋奴隸貿易（約1500–1866年間約1200萬非洲人被強行運往美洲）。' },
+          { id:'wm2', title:'啟蒙運動與革命時代', content:'啟蒙運動（17–18世紀）高舉理性旗幟批判宗教迷信和專制王權。洛克提出自然權利（生命、自由、財產）和社會契約論。孟德斯鳩主張三權分立。盧梭提出人民主權。這些思想直接影響了美國獨立宣言（1776年）和法國大革命（1789年）。工業革命（約1760–1840）以瓦特改良蒸汽機為核心動力，從此機器生產取代手工勞動，人類從農業文明邁入工業文明。' },
+          { id:'wm3', title:'兩次世界大戰（1914–1945）', content:'一戰（1914–1918）因塞拉耶佛刺殺事件引爆，約900萬士兵和700萬平民死亡，四大帝國（德意志、奧匈、俄羅斯、奧斯曼）崩潰。二戰（1939–1945）是人類歷史上規模最大、傷亡最慘重的戰爭——約7000–8500萬人死亡，包括納粹對猶太人的系統性種族滅絕（約600萬）。1945年8月廣島和長崎原子彈爆炸後日本投降。戰後成立聯合國，設立紐倫堡和東京審判追究戰爭罪行。', subs:[
+            { id:'wm3a', title:'諾曼第登陸（D-Day）', content:'1944年6月6日，盟軍發動「霸王行動」——人類歷史上最大規模的兩棲登陸作戰。登陸日投入約15.6萬士兵、近7000艘各類艦船和超過11000架飛機，在法國諾曼第海岸的五個灘頭（代號Utah、Omaha、Gold、Juno、Sword）同時登陸。奧馬哈海灘（Omaha Beach）的戰鬥最為慘烈——美軍在德軍機槍和砲火的猛烈射擊下損失慘重（約2400人傷亡），但最終成功建立了灘頭堡。諾曼第登陸開闢了歐洲第二戰場，加速了納粹德國的崩潰。' },
+          ]},
+          { id:'wm4', title:'冷戰時期（1947–1991）', content:'二戰後形成美蘇兩極對峙格局。1946年邱吉爾「鐵幕演說」、1947年杜魯門主義標誌冷戰正式開始。主要特徵：意識形態對抗、核武競賽（古巴飛彈危機，1962年，13天的對峙使世界處於核戰爭邊緣）、代理人戰爭（韓戰、越南戰爭、蘇聯入侵阿富汗）。1989年柏林圍牆倒塌、東歐劇變。1991年12月26日蘇聯正式解體為15個獨立國家。' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'culture', title: '文化', icon: '🎨', color: '#8B5CF6',
+    topics: [
+      {
+        id: 'art-styles', title: '藝術風格', desc: '從古典到當代，世界各大藝術流派的演變與技法', icon: '🖼️', color: '#8B5CF6',
+        sections: [
+          { id:'art1', title:'文藝復興藝術（14–16世紀）', content:'文藝復興的核心是重新發現古典時代的人文主義精神和對人的價值的肯定。透視法（布魯內萊斯基，約1415年）、解剖學研究、明暗法的運用，使藝術家能在平面上創造出令人信服的三維空間和真實人體。', subs:[
+            { id:'art1a', title:'義大利文藝復興三傑', content:'盛期三傑將藝術推向前所未有的高度。達文西是文藝復興「全能人」（畫家、科學家、發明家）的理想典範——《蒙娜麗莎》以其神秘的微笑和Sfumato暈塗法而聞名；《最後的晚餐》以精確的透視構圖和門徒的不同反應而成為經典。米開朗基羅認為雕塑是最高藝術形式——大衛雕像展現理想化的人體美和英雄氣概；西斯廷教堂天頂壁畫《創世紀》是單人完成的壁畫奇蹟，《創造亞當》中上帝與亞當手指相接的畫面是西方藝術最著名的圖像之一。拉斐爾以和諧典雅的構圖和溫柔的人文主義精神著稱，《雅典學院》將古希臘不同時代的哲學家聚集在同一場景，完美體現了對古典文化的崇尚。' },
+          ]},
+          { id:'art2', title:'印象派與後印象派', content:'印象派（1860s–1880s）是現代藝術的開端。莫內、雷諾瓦、德加等藝術家走出畫室到戶外捕捉光線和色彩的瞬間。莫內以短小而分離的純色筆觸描繪光線的本質，在不同光線下反覆描繪同一對象（乾草堆系列、盧昂大教堂系列）。後印象派三巨匠——塞尚（以幾何形體分析自然結構，被稱為現代藝術之父）、梵谷（以火焰般的旋轉筆觸和強烈的情感色彩著稱，《星夜》的渦卷天空成為藝術史上最為人知的圖像之一）、高更（遠赴大溪地探索原始和精神維度）。' },
+          { id:'art3', title:'現代與當代藝術', content:'畢卡索和布拉克創立立體主義——1912年將報紙等現成物拼貼到畫面上，徹底打破自文藝復興以來的透視法則。畢卡索的《格爾尼卡》（1937年）以立體主義手法控訴戰爭暴行。杜象以《噴泉》（倒置的小便斗，1917年）挑戰藝術的本體論：什麼是藝術？安迪·沃荷以金寶湯罐頭將消費文化圖像提升到藝術殿堂。草間彌生以波點和無限鏡像空間構建個人烏托邦。' },
+        ]
+      },
+      { id: 'music', title: '音樂風格', desc: '從巴洛克複調到搖滾革命——音樂風格的完整發展', icon: '🎵', color: '#8B5CF6',
+        sections: [
+          { id:'mus1', title:'巴洛克時期（1600–1750）', content:'巴洛克音樂以複調織體（多個獨立旋律線同時進行的對位法）為核心。巴赫將對位法藝術推向極致——《布蘭登堡協奏曲》、《馬太受難曲》和《平均律鋼琴曲集》（兩卷各24首，涵蓋全部24個大小調，被譽為鋼琴音樂的「舊約聖經」）。韓德爾的《彌賽亞》中「哈利路亞」大合唱已成為西方音樂最著名的片段——英國國王喬治二世在首次聽到時感動得站了起來，從此全場起立聆聽「哈利路亞」的傳統延續至今。' },
+          { id:'mus2', title:'古典與浪漫主義', content:'莫扎特（1756–1791）是音樂史上最令人驚嘆的神童——4歲開始作曲，雖僅活35年卻留下626部作品（交響曲、歌劇、鋼琴協奏曲等）。貝多芬（1770–1827）在逐漸失聰（約30歲開始，晚年完全失聰）的情況下仍在內心「聽見」音樂——第三交響曲《英雄》、第五交響曲《命運》（開篇四音動機dada-da-DAA是音樂史上最著名的片段）、第九交響曲《合唱》（首次在交響曲引入人聲，席勒的《歡樂頌》，現為歐盟盟歌）。蕭邦的夜曲和練習曲將鋼琴音樂提升到詩意高度。華格納的《尼伯龍根的指環》四聯劇歷時26年創作，以主導動機貫穿全劇。' },
+          { id:'mus3', title:'爵士樂與搖滾革命', content:'爵士樂在20世紀初的新奧爾良誕生——非洲節奏與歐洲和聲在美洲土壤的融合。路易斯·阿姆斯壯將爵士樂從集體即興轉向獨奏藝術。邁爾士·戴維斯的《Kind of Blue》（1959年）以調式爵士創造了史上最暢銷的爵士專輯。搖滾樂方面，披頭四從流行搖滾轉向革命性的《Sgt. Pepper\'s Lonely Hearts Club Band》（1967年）——運用磁帶循環、倒放錄音和印度音樂等實驗技術模糊了流行音樂和前衛藝術的界限。平克·佛洛伊德的《The Dark Side of the Moon》（1973年）連續在Billboard專輯榜停留741週（超過14年）。' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'philosophy', title: '哲學與社科', icon: '🧠', color: '#6D28D9',
+    topics: [
+      {
+        id: 'western-phil', title: '西方哲學', desc: '從古希臘到當代——西方哲學兩千年的核心思想', icon: '💭', color: '#6D28D9',
+        sections: [
+          { id:'ph1', title:'古希臘哲學', content:'所有西方哲學都是柏拉圖對話錄的註腳。蘇格拉底以反詰法不斷追問以揭示對話者信念中的矛盾——「我只知道自己一無所知」。公元前399年被雅典法庭以不敬神罪名判處死刑，飲毒芹汁從容赴死。柏拉圖的理型論認為感官世界只是永恆「理型」的不完美投影——《理想國》中以洞穴寓言闡釋這一思想。亞里士多德的研究涵蓋邏輯學（三段論）、形而上學（四因說）、倫理學（中庸之道、幸福Eudaimonia是最高目的）等幾乎所有知識領域。', subs:[
+            { id:'ph1a', title:'洞穴寓言', content:'柏拉圖在《理想國》第七卷中以一個極具想像力的比喻闡述理型論：人類就像自小被囚禁在洞穴中的囚徒，被鎖鏈束縛只能看到前方牆上的影子（由身後火光投射），他們認為這些影子就是真實世界。哲學家就像是掙脫鎖鏈、走出洞穴的人——最初被陽光刺激得什麼也看不清，但逐漸適應後看到了真正的世界（太陽象徵著「善之理型」，一切知識和真理的源泉）。而如果這個人返回洞穴告訴其他囚徒真相，他們會嘲笑他、甚至殺死他（影射蘇格拉底之死）。' },
+          ]},
+          { id:'ph2', title:'近代哲學革命', content:'笛卡兒從普遍懷疑出發得出「我思故我在」——即使懷疑一切，懷疑本身證明了我的存在。康德以「批判哲學」調和理性主義和經驗主義：人類心靈的先天認知結構（時間、空間、因果等範疇）主動構造了我們感知的世界，因此我們永遠無法認識「物自身」。「定言命令」第一表述：「只按照你同時可以意願讓這條準則成為普遍法則的準則去行動」。黑格爾的辯證法（正題→反題→合題）將整個歷史解釋為「絕對精神」自我實現的過程。馬克思將黑格爾的辯證法「倒轉過來」（從唯心到唯物），創立了歷史唯物主義——經濟基礎（生產力和生產關係）決定上層建築（政治、法律、意識形態）。' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'science', title: '科學', icon: '🔬', color: '#5B21B6',
+    topics: [
+      {
+        id: 'biology-topic', title: '生物學', desc: '從細胞結構到生態系統——生命科學的核心知識', icon: '🧬', color: '#5B21B6',
+        sections: [
+          { id:'bio1', title:'細胞生物學', content:'細胞是生命的基本單位。真核細胞擁有複雜的內部結構：細胞核（存儲遺傳物質DNA）、粒線體（能量工廠，通過有氧呼吸產生ATP——細胞的通用能量貨幣）、內質網（蛋白質合成和脂質代謝）、高基氏體（蛋白質修飾和運輸）、溶酶體（細胞消化系統）、葉綠體（植物特有，光合作用場所）。粒線體擁有自己的環狀DNA——這強烈支持了內共生理論（粒線體起源於約15億年前被原始真核細胞吞噬的需氧細菌）。', subs:[
+            { id:'bio1a', title:'DNA雙螺旋與中心法則', content:'1953年華生和克里克在《自然》期刊發表了DNA雙螺旋結構模型（僅一頁紙的短文）——20世紀生物學最重要的發現。雙螺旋由兩條反向平行的多核苷酸鏈通過互補鹼基配對（A=T、G≡C）螺旋纏繞。1958年克里克提出中心法則：遺傳信息從DNA流向RNA（轉錄），再從RNA流向蛋白質（轉譯），信息不會從蛋白質逆流回核酸。2012年CRISPR-Cas9基因編輯技術將細菌的免疫系統改造為通用基因編輯工具（2020年諾貝爾化學獎），使人類能以空前的精確度修改幾乎任何生物的基因組。' },
+          ]},
+          { id:'bio2', title:'演化生物學', content:'達爾文於1859年出版《物種起源》。加拉巴哥群島上不同島嶼的「達爾文雀」喙形狀因食物來源的差異而變異——以種子為食的雀鳥擁有粗壯的喙，以昆蟲為食的則擁有細長尖銳的喙。自然選擇的核心邏輯是：變異+過度繁殖+生存競爭+差異性繁殖成功→演化。現代演化綜合理論將達爾文學說與孟德爾遺傳學結合。木村資生的中性理論（1968年）論證分子層面大多數遺傳變異是隨機漂變而非自然選擇。古爾德的間斷平衡理論認為演化不是始終緩慢均勻，而是長期穩定後快速變化。' },
+        ]
+      },
+      { id: 'physics-topic', title: '物理學', desc: '從牛頓力學到量子糾纏——探索宇宙基本規律', icon: '⚛️', color: '#5B21B6',
+        sections: [
+          { id:'phys1', title:'經典物理學', content:'牛頓1687年《原理》以運動三定律和萬有引力定律用同一組方程解釋從掉落蘋果到行星軌道的所有運動——人類智慧的巔峰。熱力學四大定律：第零定律確立溫度概念；第一定律（能量守恆）宣告第一類永動機不可能；第二定律（熵永不減少，∆S ≥ 0）定義了時間的箭頭——揭示了宏觀世界不可逆的方向性。', subs:[
+            { id:'phys1a', title:'海王星的發現——牛頓力學的輝煌勝利', content:'1846年，法國天文學家勒維耶和英國天文學家亞當斯分別通過分析天王星軌道的神秘擾動（實際軌道偏離牛頓力學預測），獨立計算出了未知行星的質量和位置。勒維耶將預測結果寄給柏林天文台的伽勒，伽勒當晚就在預測位置附近找到了海王星——偏差不到1度。這一事件被認為是牛頓力學最為輝煌的勝利——人類僅憑數學計算就在浩瀚星空中發現了一顆新行星。' },
+          ]},
+          { id:'phys2', title:'現代物理學革命', content:'1905年愛因斯坦狹義相對論：光速不變、時間膨脹、長度收縮、E=mc²。1915年廣義相對論：引力是時空彎曲的表現。2015年LIGO首次直接探測重力波（2017年諾貝爾獎）。2019年事件視界望遠鏡發布人類首張黑洞照片。量子力學方面：普朗克發現能量量子化（1900年）；海森堡測不準原理（∆x∆p ≥ ħ/2，位置和動量不可同時精確測量）；貝爾不等式被實驗推翻，證明量子糾纏（「鬼魅般的超距作用」）是真實存在的（2022年諾貝爾物理學獎）。' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'industry', title: '行業', icon: '🏭', color: '#A78BFA',
+    topics: [
+      {
+        id: 'ict-topic', title: '資訊及通訊科技', desc: '從晶片到AI——數位時代的基礎設施', icon: '📡', color: '#A78BFA',
+        sections: [
+          { id:'ict1', title:'半導體產業', content:'半導體是現代數字經濟的基石。產業鏈包括設計（NVIDIA、高通、AMD）、製造（台積電TSMC掌握全球約90%先進製程市場）和封測。建造一座3奈米晶圓廠的成本已超200億美元。3奈米製程意味著電晶體柵極寬度僅約幾十個原子大小——需要使用極紫外光（EUV，波長13.5nm）光刻技術。一片晶圓需經歷上千道工序、耗時數月——任何微小灰塵都可能導致整片報廢（無塵室潔淨度達到ISO Class 1標準）。' },
+          { id:'ict2', title:'人工智能產業', content:'AI從1956年達特茅斯會議誕生，經歷多次寒冬和突破。2012年深度學習爆發——AlexNet在ImageNet大賽中以大幅優勢奪冠。2017年Transformer架構（「Attention Is All You Need」論文）徹底改變了自然語言處理。GPT系列、Gemini、Claude等大語言模型能夠進行自然語言對話、撰寫程式碼和推理——但「幻覺」（生成看似可信但錯誤的內容）是其根本性缺陷之一。AI倫理問題：算法偏見、深度偽造、勞動力替代。歐盟AI Act（2024年）是全球首部全面監管AI的法律。' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'countries', title: '國家概況', icon: '🌏', color: '#4C1D95',
+    topics: [
+      {
+        id: 'china-country', title: '中國', desc: '世界第二大經濟體兼文明古國', icon: '🇨🇳', color: '#4C1D95',
+        sections: [
+          { id:'cn1', title:'政治體制', content:'中華人民共和國是單一制社會主義共和國。全國人民代表大會是最高國家權力機關。中國共產黨（成立於1921年，約9800萬黨員）是唯一執政黨，實行中共領導下的多黨合作和政治協商制度。中國人民政治協商會議是協商民主的重要機構。' },
+          { id:'cn2', title:'改革開放歷程', content:'1978年十一屆三中全會確立改革開放國策。農村改革：安徽省小崗村18位農民秘密簽訂「生死狀」實行包產到戶，家庭聯產承包責任制迅速推廣全國。1980年設立深圳等四個經濟特區（「時間就是金錢，效率就是生命」）。1992年鄧小平南巡講話確立社會主義市場經濟方向。2001年加入WTO深度融入全球貿易。此後年均約9–10%的高速增長、2010年超越日本成為第二經濟體，超過8億人擺脫貧困。當前挑戰：人口老齡化（2022年出現首次人口負增長）、房地產調整、技術自主創新壓力。' },
+        ]
+      },
+      { id: 'usa-country', title: '美國', desc: '世界最大經濟體、科技與軍事超級大國', icon: '🇺🇸', color: '#4C1D95',
+        sections: [
+          { id:'us1', title:'政治制度', content:'聯邦制總統制共和國，以1787年憲法（世界最古老仍運行的成文憲法）為最高法律。三權分立：總統（行政+武裝部隊總司令）、國會（參議院100人+眾議院435人）、最高法院（9名終身大法官）。選舉人團制度（共538票，贏者通吃規則）使候選人可能贏得普選總票數但輸掉選舉（2000年戈爾、2016年希拉蕊）。' },
+          { id:'us2', title:'矽谷與科技創新', content:'矽谷位於加州舊金山灣區南部，是全球無可爭議的技術創新中心。其成功因素：史丹佛大學、柏克萊加大等世界頂尖研究型大學；紅杉資本、a16z等風險投資集中地（Sand Hill Road）；加州法律不執行競業限制協議——知識和人才高速流通；失敗不被視為恥辱而是學習經歷（「快速失敗、快速學習」）。惠普於1939年在帕羅奧圖車庫創立（矽谷誕生地）。Apple、Google、NVIDIA等巨頭均在此發源。' },
+        ]
+      },
+      { id: 'japan-country', title: '日本', desc: '世界第三大經濟體，傳統與現代完美融合', icon: '🇯🇵', color: '#4C1D95',
+        sections: [
+          { id:'jp1', title:'戰後經濟奇蹟', content:'二戰後從廢墟中崛起為全球第二經濟大國的歷程是經濟史上最引人注目的故事之一。1950–1973年GDP年均增長約9.5%。促成因素：美國馬歇爾計劃和韓戰特需、通產省（MITI）的產業政策（將有限資源引導到戰略出口產業）、終身僱傭制和年功序列制提供穩定勞動力。' },
+          { id:'jp2', title:'泡沫經濟與失落的三十年', content:'1985年廣場協議後日元急劇升值引發資產價格泡沫——日經指數在1989年12月29日達到38,915點歷史高點（至今遠未恢復）。泡沫破裂後日本進入長期低增長/通縮：65歲以上人口佔比超29%（全球最高之一），勞動力萎縮；政府債務GDP比超260%（全球最高，但因主要由本國持有而避免了希臘式危機）。' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'lifestyle', title: '日常品味', icon: '🍷', color: '#C4B5FD',
+    topics: [
+      {
+        id: 'wine', title: '品酒', desc: '葡萄酒與威士忌的產區、釀造與品鑑體系', icon: '🍷', color: '#C4B5FD',
+        sections: [
+          { id:'wine1', title:'法國經典產區', content:'波爾多：以紅酒為主。左岸（梅多克、格拉夫）以卡本內蘇維濃為主要品種，強勁單寧和黑醋栗風味。1855年分級將梅多克酒莊分為五級——拉菲、拉圖、瑪歌、木桐、侯伯王位列一級莊。右岸以梅洛為主，風格較柔和。布根地：以單一葡萄園（Climat）的精細分級聞名——33個特級園（Grand Cru），其中羅曼尼·康帝（Romanée-Conti）被認為是世界最好和最昂貴的葡萄酒（一瓶可超過2萬美元）。核心品種為黑皮諾（紅，世界上最「難伺候」的葡萄品種）和夏多內（白）。', subs:[
+            { id:'wine1a', title:'羅曼尼·康帝（Romanée-Conti）', content:'位於法國布根地夜丘產區的沃恩-羅曼尼村（Vosne-Romanée），葡萄園面積僅1.81公頃（約兩個足球場大小），年產量僅約450箱（約5,400瓶）。採用有機和生物動力法種植，全部手工採摘和篩選。其獨特的風土賦予了葡萄酒極致的複雜度、深度和陳年潛力——專業品酒師形容其香氣涵蓋了黑櫻桃、覆盆子、紫羅蘭、香料、皮革、松露和東方香料的細微層次。酒莊採用極其嚴格的配額制度，要買到一瓶新出的Romanée-Conti幾乎不可能不與其他酒款捆綁購買。' },
+          ]},
+          { id:'wine2', title:'系統性品鑑方法', content:'專業品鑑（WSET體系）：視覺（傾斜45度觀察澄清度、色調——年輕紅酒紫紅、陳年後磚紅至褐色）、嗅覺（靜止→旋轉酒杯釋放香氣——一類（品種香如果味）、二類（發酵香如橡木桶的香草）、三類（陳年香如蘑菇皮革））、味覺（酸度、單寧澀感、酒體輕盈至豐滿、餘味持續時間——長於15秒是高品質標誌）、整體平衡感。如同優秀的交響樂，每個元素服務於整體和諧。' },
+          { id:'wine3', title:'蘇格蘭威士忌五大產區', content:'斯貝賽（Speyside）——優雅甜美果香，以麥卡倫為代表。高地（Highlands）——風格多樣，石楠花蜜至水果蛋糕。低地（Lowlands）——最輕柔，草香和花香。艾雷島（Islay）——強烈泥煤煙燻（Ardbeg可達40–55 ppm）、碘和海藻風味，因當地麥芽以富含泥煤的火烘乾。坎貝爾鎮（Campbeltown）——曾是世界威士忌之都（30多家蒸餾廠），如今僅剩三家，以Springbank最為知名。' },
+        ]
+      },
+      { id: 'tea', title: '品茶', desc: '中國六大茶類的完整鑑賞體系', icon: '🍵', color: '#C4B5FD',
+        sections: [
+          { id:'tea1', title:'六大茶類體系', content:'按發酵程度從低到高：綠茶（不發酵——龍井、碧螺春，以80℃水沖泡保留鮮爽）、白茶（微發酵——白毫銀針、白牡丹，越陳越香）、黃茶（輕發酵——君山銀針，產量稀少）、烏龍茶（半發酵15–70%——大紅袍岩茶之王、「綠葉紅鑲邊」的形成於做青工序）、紅茶（全發酵——正山小種是世界紅茶鼻祖，約1568年因軍隊佔用茶農住所、以松木明火烘乾而無意創造了煙燻風味）、黑茶（後發酵——普洱茶，生茶在適宜條件下陳化數十年價值可達數十萬至數百萬元）。' },
+          { id:'tea2', title:'工夫茶藝', content:'盛行於福建、廣東潮汕及台灣。核心要素：紫砂壺/蓋碗；茶水比例1:20–1:30（普洱）；水溫因茶而異（綠茶80℃、烏龍茶100℃）；沖泡時間精確控制（第一泡約20秒，後續每泡延長5–10秒，好的烏龍茶可泡7–10次）。品茶講究「觀色、聞香、品味」三步。日本茶道由千利休（1522–1591）集大成，核心理念「和敬清寂」——和（和睦）、敬（尊重）、清（清淨）、寂（靜寂）。茶道中的「一期一會」概念——每一次茶會都是獨一無二的相遇。' },
+        ]
+      },
+    ]
+  },
+];
+
+// ── RENDER ──
+function renderCategories() {
+  const grid = document.getElementById('categoriesGrid');
+  grid.innerHTML = categories.map(c => `
+    <div class="cat-card" onclick="openCategory('${c.id}')">
+      <div class="cat-icon" style="background:${c.color}15">${c.icon}</div>
+      <div class="cat-title">${c.title}</div>
+      <div class="cat-count">${c.topics.length} 個主題</div>
+    </div>
+  `).join('');
+}
+
+function openCategory(catId) {
+  const cat = categories.find(c => c.id === catId);
+  if (!cat) return;
+  const topicView = document.getElementById('topicView');
+  const homeView = document.getElementById('homeView');
+
+  topicView.innerHTML = `
+    <div class="back-row">
+      <button class="back-btn" onclick="goHome()">←</button>
+      <div class="breadcrumb" style="background:${cat.color}15;color:${cat.color}">${cat.icon} ${cat.title}</div>
+    </div>
+    <div class="section-title">主題列表（${cat.topics.length}）</div>
+    ${cat.topics.map(t => `
+      <div class="cat-card" style="text-align:left;padding:16px;margin-bottom:10px" onclick="openTopic('${cat.id}','${t.id}')">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:22px">${t.icon}</div>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:15px;color:var(--text)">${t.title}</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;line-height:1.4">${t.desc}</div>
+          </div>
+          <span style="font-size:20px;color:var(--primary-pale)">›</span>
+        </div>
+      </div>
+    `).join('')}
+  `;
+
+  homeView.classList.add('hidden');
+  topicView.classList.add('active');
+  document.getElementById('contentArea').scrollTop = 0;
+}
+
+function openTopic(catId, topicId) {
+  const cat = categories.find(c => c.id === catId);
+  if (!cat) return;
+  const topic = cat.topics.find(t => t.id === topicId);
+  if (!topic) return;
+
+  const topicView = document.getElementById('topicView');
+  topicView.innerHTML = `
+    <div class="back-row">
+      <button class="back-btn" onclick="openCategory('${catId}')">←</button>
+      <div class="breadcrumb" style="background:${cat.color}15;color:${cat.color}">${cat.icon} ${cat.title}</div>
+    </div>
+    <div class="topic-header">
+      <div class="topic-h1">${topic.icon} ${topic.title}</div>
+      <div class="topic-desc">${topic.desc}</div>
+      <div class="topic-actions">
+        <button class="action-btn" id="bookmarkBtn" onclick="toggleBookmark(this, '${topicId}')">☆ 收藏</button>
+        <button class="action-btn" onclick="showToast('📥 文章已儲存為離線閱讀')">📂 離線閱讀</button>
+      </div>
+    </div>
+    <div class="accordion" id="accordionRoot">
+      ${topic.sections.map((s, i) => renderSection(s, 0, i)).join('')}
+    </div>
+  `;
+  document.getElementById('contentArea').scrollTop = 0;
+
+  // Open first level by default
+  document.querySelectorAll('.accordion-item.depth-0').forEach(item => item.classList.add('open'));
+}
+
+function renderSection(section, depth, index) {
+  const hasSubs = section.subs && section.subs.length > 0;
+  const depthClass = `depth-${Math.min(depth, 3)}`;
+  return `
+    <div class="accordion-item ${depthClass} ${depth === 0 ? 'open' : ''}">
+      <div class="accordion-header" onclick="toggleSection(this.parentElement)">
+        ${hasSubs
+          ? `<span class="arrow">▶</span>`
+          : `<span class="dot"></span>`
+        }
+        <span class="accordion-title">${section.title}</span>
+      </div>
+      <div class="accordion-body">
+        ${section.content ? `<div class="accordion-content">${section.content}</div>` : ''}
+        ${hasSubs ? section.subs.map((sub, i) => renderSection(sub, depth + 1, i)).join('') : ''}
+      </div>
+    </div>
+  `;
+}
+
+function toggleSection(item) {
+  item.classList.toggle('open');
+}
+
+function goHome() {
+  const topicView = document.getElementById('topicView');
+  const homeView = document.getElementById('homeView');
+  topicView.classList.remove('active');
+  homeView.classList.remove('hidden');
+  document.getElementById('contentArea').scrollTop = 0;
+}
+
+function toggleBookmark(btn, topicId) {
+  btn.classList.toggle('bookmarked');
+  if (btn.classList.contains('bookmarked')) {
+    btn.innerHTML = '⭐ 已收藏';
+    showToast('⭐ 已加入收藏');
+  } else {
+    btn.innerHTML = '☆ 收藏';
+    showToast('已取消收藏');
+  }
+}
+
+function handleSearch() {
+  const query = document.getElementById('searchInput').value.trim().toLowerCase();
+  const resultsDiv = document.getElementById('searchResults');
+  const homeView = document.getElementById('homeView');
+
+  if (!query) {
+    if (resultsDiv) resultsDiv.remove();
+    return;
+  }
+
+  const results = [];
+  categories.forEach(cat => {
+    cat.topics.forEach(topic => {
+      if (topic.title.toLowerCase().includes(query) || topic.desc.toLowerCase().includes(query)) {
+        results.push({ topic, cat });
+      }
+    });
+  });
+
+  let existing = document.getElementById('searchResults');
+  if (existing) existing.remove();
+
+  if (results.length === 0) return;
+
+  const div = document.createElement('div');
+  div.id = 'searchResults';
+  div.style.cssText = 'margin-bottom:16px;animation:fadeSlideIn 0.3s ease';
+  div.innerHTML = `
+    <div style="font-size:13px;color:var(--text-secondary);margin-bottom:10px">找到 ${results.length} 個相關主題</div>
+    ${results.map(r => `
+      <div class="cat-card" style="text-align:left;padding:14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between" onclick="openTopic('${r.cat.id}','${r.topic.id}')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">${r.topic.icon}</span>
+          <div>
+            <div style="font-weight:600;font-size:14px">${r.topic.title}</div>
+            <span style="font-size:11px;padding:2px 8px;border-radius:6px;background:${r.cat.color}15;color:${r.cat.color}">${r.cat.title}</span>
+          </div>
+        </div>
+        <span style="font-size:18px;color:var(--primary-pale)">›</span>
+      </div>
+    `).join('')}
+  `;
+  homeView.insertBefore(div, homeView.firstChild);
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// Init
+renderCategories();
+</script>
+</body>
+</html>
