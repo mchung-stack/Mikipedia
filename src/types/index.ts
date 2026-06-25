@@ -5,6 +5,7 @@ export interface ContentSection {
   title: string;
   content?: string;
   subsections?: ContentSection[];
+  subs?: ContentSection[];
 }
 
 export interface Topic {
