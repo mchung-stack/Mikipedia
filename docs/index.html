@@ -650,6 +650,17 @@ function toggleBookmark(btn, topicId) {
   }
 }
 
+function searchInSections(sections, query) {
+  if (!sections) return false;
+  for (const s of sections) {
+    if ((s.title||'').toLowerCase().includes(query)) return true;
+    if ((s.content||'').toLowerCase().includes(query)) return true;
+    if (s.subsections && searchInSections(s.subsections, query)) return true;
+    if (s.subs && searchInSections(s.subs, query)) return true;
+  }
+  return false;
+}
+
 function handleSearch() {
   const query = document.getElementById('searchInput').value.trim().toLowerCase();
   const resultsDiv = document.getElementById('searchResults');
@@ -663,7 +674,9 @@ function handleSearch() {
   const results = [];
   categories.forEach(cat => {
     cat.topics.forEach(topic => {
-      if (topic.title.toLowerCase().includes(query) || topic.desc.toLowerCase().includes(query)) {
+      if (topic.title.toLowerCase().includes(query) ||
+          topic.desc.toLowerCase().includes(query) ||
+          searchInSections(topic.sections, query)) {
         results.push({ topic, cat });
       }
     });
